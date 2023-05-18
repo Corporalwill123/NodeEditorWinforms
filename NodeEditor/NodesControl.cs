@@ -154,7 +154,7 @@ namespace NodeEditor
         /// <summary>
         /// Default constructor
         /// </summary>
-        public NodesControl()
+        public NodesControl() : base(new GraphicsMode(32, 24, 8, 8))
         {
             InitializeComponent();
             KeyDown += OnKeyDown;

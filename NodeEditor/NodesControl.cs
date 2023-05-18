@@ -258,7 +258,7 @@ namespace NodeEditor
 
             if (selectionStart != PointF.Empty)
             {
-                var rect = Rectangle.Round(MakeRect(selectionStart, selectionEnd));
+                var rect = MakeRect(selectionStart, selectionEnd);
                 g.FillRectangle(new SolidBrush(Color.FromArgb(50, Color.CornflowerBlue)), rect);
                 g.DrawRectangle(new Pen(Color.DodgerBlue), rect);
             }

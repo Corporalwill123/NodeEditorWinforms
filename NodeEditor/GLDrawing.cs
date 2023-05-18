@@ -225,14 +225,29 @@ namespace NodeEditor
         }
         public void DrawLines(Pen pen, PointF[] points)
         {
-            GL.Begin(PrimitiveType.LineStrip);
+            GL.Begin(PrimitiveType.Quads);
 
-            GL.LineWidth(pen.Width); // TODO likely unsupported
+            var width = pen.Width / 2;
 
             GL.Color4(GLDrawing.ToColor4(pen.Color));
-            foreach (var point in points)
+            for (var i = 0; i < points.Length - 1; i++)
             {
-                GL.Vertex2(point.X, point.Y);
+                var a = points[i];
+                var b = points[i + 1];
+
+                // TODO mitered joints
+                var dx = b.X - a.X;
+                var dy = b.Y - a.Y;
+
+                var d = Math.Sqrt(dx * dx + dy * dy);
+
+                var nx = -dy / d * width;
+                var ny = dx / d * width;
+
+                GL.Vertex2(a.X - nx, a.Y - ny);
+                GL.Vertex2(a.X + nx, a.Y + ny);
+                GL.Vertex2(b.X + nx, b.Y + ny);
+                GL.Vertex2(b.X - nx, b.Y - ny);
             }
 
             GL.End();

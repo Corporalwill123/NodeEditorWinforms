@@ -34,7 +34,6 @@
             // 
             this.Name = "NodesControl";
             this.Size = new System.Drawing.Size(574, 401);
-            this.Resize += new System.EventHandler(this.NodesControl_Resize);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.NodesControl_MouseClick);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NodesControl_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.NodesControl_MouseMove);

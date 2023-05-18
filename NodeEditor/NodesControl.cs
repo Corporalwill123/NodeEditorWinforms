@@ -188,9 +188,10 @@ namespace NodeEditor
             }
         }
 
-        private void NodesControl_Resize(object sender, EventArgs e)
+        internal Size lastSize = Size.Empty;
+        internal void CheckResize()
         {
-            MakeCurrent();
+            if (ClientSize == lastSize) return;
 
             if (ClientSize.Height == 0)
                 ClientSize = new System.Drawing.Size(ClientSize.Width, 1);
@@ -200,11 +201,15 @@ namespace NodeEditor
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
             GL.Ortho(0, ClientSize.Width, ClientSize.Height, 0, 0, 1);
+
+            lastSize = ClientSize;
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
             MakeCurrent();
+
+            CheckResize();
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Enable(EnableCap.Blend);
@@ -218,8 +223,10 @@ namespace NodeEditor
         {
             var sw = new Stopwatch();
             sw.Start();
+
             MakeCurrent();
 
+            CheckResize();
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Enable(EnableCap.Blend);

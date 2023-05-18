@@ -496,7 +496,7 @@ namespace NodeEditor
             {
                 var rect = MakeRect(selectionStart, selectionEnd);
                 graph.Nodes.ForEach(
-                    x => x.IsSelected = rect.Contains(new RectangleF(new PointF(x.X, x.Y), x.GetNodeBounds())));
+                    x => x.IsSelected = rect.IntersectsWith(new RectangleF(new PointF(x.X, x.Y), x.GetNodeBounds())));
                 selectionStart = PointF.Empty;
             }
 

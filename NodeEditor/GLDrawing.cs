@@ -225,8 +225,11 @@ namespace NodeEditor
         }
         public void DrawLines(Pen pen, PointF[] points)
         {
-            GL.Begin(PrimitiveType.Quads);
+            if (points.Length < 2) return;
 
+            GL.Begin(PrimitiveType.Triangles);
+
+            GL.Color4(pen.Color);
             var width = pen.Width / 2;
 
             void lineQuad(PointF a, PointF b, out float dx, out float dy, out float d, out float nx, out float ny)
@@ -240,44 +243,45 @@ namespace NodeEditor
                 ny = dx / d * width;
             }
 
-            GL.Color4(GLDrawing.ToColor4(pen.Color));
+            PointF oa = points[0], ob = points[1];
+            float odx, ody, od, onx, ony;
+
+            lineQuad(oa, ob, out odx, out ody, out od, out onx, out ony);
+
             for (var i = 0; i < points.Length - 1; i++)
             {
-                var a = points[i];
-                var b = points[i + 1];
+                GL.Vertex2(oa.X - onx, oa.Y - ony); // 1
+                GL.Vertex2(oa.X + onx, oa.Y + ony); // 2
+                GL.Vertex2(ob.X + onx, ob.Y + ony); // 3
 
-                float dx, dy, d, nx, ny;
-                lineQuad(a, b, out dx, out dy, out d, out nx, out ny);
+                GL.Vertex2(ob.X + onx, ob.Y + ony); // 3
+                GL.Vertex2(ob.X - onx, ob.Y - ony); // 4
+                GL.Vertex2(oa.X - onx, oa.Y - ony); // 1
 
-                GL.Vertex2(a.X - nx, a.Y - ny);
-                GL.Vertex2(a.X + nx, a.Y + ny);
-                GL.Vertex2(b.X + nx, b.Y + ny);
-                GL.Vertex2(b.X - nx, b.Y - ny);
-            }
+                if (i < points.Length - 2)
+                {
+                    var na = points[i + 1];
+                    var nb = points[i + 2];
+                    float ndx, ndy, nd, nnx, nny;
 
-            GL.End();
+                    lineQuad(na, nb, out ndx, out ndy, out nd, out nnx, out nny);
 
-            GL.Begin(PrimitiveType.Triangles);
+                    GL.Vertex2(na.X, na.Y);
+                    GL.Vertex2(na.X - nnx, na.Y - nny);
+                    GL.Vertex2(na.X - onx, na.Y - ony);
 
-            for (var i = 0; i < points.Length - 2; i++)
-            {
-                var a = points[i];
-                var b = points[i + 1];
-                var c = points[i + 2];
+                    GL.Vertex2(na.X, na.Y);
+                    GL.Vertex2(na.X + nnx, na.Y + nny);
+                    GL.Vertex2(na.X + onx, na.Y + ony);
 
-                float dxab, dyab, dab, nxab, nyab;
-                lineQuad(a, b, out dxab, out dyab, out dab, out nxab, out nyab);
-
-                float dxcb, dycb, dcb, nxcb, nycb;
-                lineQuad(c, b, out dxcb, out dycb, out dcb, out nxcb, out nycb);
-
-                GL.Vertex2(b.X, b.Y);
-                GL.Vertex2(b.X - nxcb, b.Y - nycb);
-                GL.Vertex2(b.X + nxab, b.Y + nyab);
-
-                GL.Vertex2(b.X, b.Y);
-                GL.Vertex2(b.X + nxcb, b.Y + nycb);
-                GL.Vertex2(b.X - nxab, b.Y - nyab);
+                    oa = na;
+                    ob = nb;
+                    odx = ndx;
+                    ody = ndy;
+                    od = nd;
+                    onx = nnx;
+                    ony = nny;
+                }
             }
 
             GL.End();

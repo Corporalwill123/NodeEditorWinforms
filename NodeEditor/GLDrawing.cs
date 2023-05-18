@@ -45,10 +45,6 @@ namespace NodeEditor
 
             GL.End();
         }
-        public static Color4 ToColor4(Color c)
-        {
-            return new Color4(c.R, c.G, c.B, c.A);
-        }
     }
 
     public class GLGraphics
@@ -189,7 +185,7 @@ namespace NodeEditor
 
         public void DrawRectangle(Pen pen, RectangleF rect)
         {
-            GLDrawing.DrawRectangle(rect, GLDrawing.ToColor4(pen.Color));
+            GLDrawing.DrawRectangle(rect, pen.Color);
         }
 
         public void FillRectangle(Brush brush, RectangleF rect)
@@ -197,7 +193,7 @@ namespace NodeEditor
             switch (brush)
             {
                 case SolidBrush b:
-                    GLDrawing.FillRectangle(rect, GLDrawing.ToColor4(b.Color));
+                    GLDrawing.FillRectangle(rect, b.Color);
                     break;
                 default:
                     throw new NotImplementedException();

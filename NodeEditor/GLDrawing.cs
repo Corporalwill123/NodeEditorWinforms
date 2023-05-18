@@ -229,25 +229,55 @@ namespace NodeEditor
 
             var width = pen.Width / 2;
 
+            void lineQuad(PointF a, PointF b, out float dx, out float dy, out float d, out float nx, out float ny)
+            {
+                dx = b.X - a.X;
+                dy = b.Y - a.Y;
+
+                d = (float) Math.Sqrt(dx * dx + dy * dy);
+
+                nx = -dy / d * width;
+                ny = dx / d * width;
+            }
+
             GL.Color4(GLDrawing.ToColor4(pen.Color));
             for (var i = 0; i < points.Length - 1; i++)
             {
                 var a = points[i];
                 var b = points[i + 1];
 
-                // TODO mitered joints
-                var dx = b.X - a.X;
-                var dy = b.Y - a.Y;
-
-                var d = Math.Sqrt(dx * dx + dy * dy);
-
-                var nx = -dy / d * width;
-                var ny = dx / d * width;
+                float dx, dy, d, nx, ny;
+                lineQuad(a, b, out dx, out dy, out d, out nx, out ny);
 
                 GL.Vertex2(a.X - nx, a.Y - ny);
                 GL.Vertex2(a.X + nx, a.Y + ny);
                 GL.Vertex2(b.X + nx, b.Y + ny);
                 GL.Vertex2(b.X - nx, b.Y - ny);
+            }
+
+            GL.End();
+
+            GL.Begin(PrimitiveType.Triangles);
+
+            for (var i = 0; i < points.Length - 2; i++)
+            {
+                var a = points[i];
+                var b = points[i + 1];
+                var c = points[i + 2];
+
+                float dxab, dyab, dab, nxab, nyab;
+                lineQuad(a, b, out dxab, out dyab, out dab, out nxab, out nyab);
+
+                float dxcb, dycb, dcb, nxcb, nycb;
+                lineQuad(c, b, out dxcb, out dycb, out dcb, out nxcb, out nycb);
+
+                GL.Vertex2(b.X, b.Y);
+                GL.Vertex2(b.X - nxcb, b.Y - nycb);
+                GL.Vertex2(b.X + nxab, b.Y + nyab);
+
+                GL.Vertex2(b.X, b.Y);
+                GL.Vertex2(b.X + nxcb, b.Y + nycb);
+                GL.Vertex2(b.X - nxab, b.Y - nyab);
             }
 
             GL.End();

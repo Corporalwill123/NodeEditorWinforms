@@ -319,8 +319,8 @@ namespace NodeEditor
             }
             var h = HeaderHeight + Math.Max(inputs*(SocketVisual.SocketHeight + ComponentPadding),
                 outputs*(SocketVisual.SocketHeight + ComponentPadding)) + ComponentPadding*2f;
-
-            csize.Width = Math.Max(csize.Width, NodeWidth);
+            var w = SocketVisual.SocketHeight * 4 + GLGraphics.TmpGraphics.MeasureString(Name, font).Width + ComponentPadding;
+            csize.Width = Math.Max(csize.Width, Math.Max(w, NodeWidth));
             csize.Height = Math.Max(csize.Height, h);
             if(CustomWidth >= 0)
             {

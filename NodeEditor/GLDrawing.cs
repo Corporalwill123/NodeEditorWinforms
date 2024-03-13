@@ -46,7 +46,7 @@ namespace NodeEditor
         private Dictionary<string, Texture> StringTextures = new Dictionary<string, Texture>();
         private Dictionary<Image, Texture> ImageTextures = new Dictionary<Image, Texture>();
 
-        internal static Graphics TmpGraphics = Graphics.FromImage(new Bitmap(1,1));
+        public static Graphics TmpGraphics = Graphics.FromImage(new Bitmap(1,1));
 
         protected class Texture
         {

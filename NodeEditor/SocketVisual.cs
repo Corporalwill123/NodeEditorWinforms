@@ -36,6 +36,7 @@ namespace NodeEditor
         public string Name { get; set; }
         public Type Type { get; set; }
         public bool Input { get; set; }
+        public bool Label { get; set; }
         public object Value { get; set; }
         public bool IsMainExecution { get; set; }
 
@@ -81,7 +82,11 @@ namespace NodeEditor
             }
             else
             {
-                g.DrawImage(Socket, socketRect);
+                if (!Label) 
+                {
+                    g.DrawImage(Socket, socketRect);
+                }
+                
             }
         }
 

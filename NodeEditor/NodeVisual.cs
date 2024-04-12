@@ -40,6 +40,7 @@ namespace NodeEditor
 
     public enum Direction
     {
+        None,
         In,
         Out,
     }
@@ -188,16 +189,17 @@ namespace NodeEditor
                 curInputH += SocketVisual.SocketHeight + ComponentPadding;
             }
 
-            foreach (var input in GetInputs())
+            foreach (var input in GetInputsWithLabels())
             {
                 var socket = new SocketVisual();
                 socket.Type = input.ParameterType;
                 socket.Height = SocketVisual.SocketHeight;
                 socket.Name = input.Name;
-                socket.Width = SocketVisual.SocketHeight;
+                socket.Width = input.Direction == Direction.In ? SocketVisual.SocketHeight : 0;
                 socket.X = X;
                 socket.Y = Y + curInputH;
                 socket.Input = true;
+                socket.Label = input.Direction == Direction.None;
 
                 socketList.Add(socket);
 
@@ -285,6 +287,11 @@ namespace NodeEditor
             return nodeContext;
         }
 
+        public IEnumerable<Parameter> GetInputsWithLabels()
+        {
+            return Type.GetParameters().Where(x => (x.Direction == Direction.In) || (x.Direction == Direction.None));
+        }
+
         public IEnumerable<Parameter> GetInputs()
         {
             return Type.GetParameters().Where(x => x.Direction == Direction.In);
@@ -293,6 +300,15 @@ namespace NodeEditor
         public IEnumerable<Parameter> GetOutputs()
         {
             return Type.GetParameters().Where(x => x.Direction == Direction.Out);
+        }
+
+        public float GetInputWidth()
+        {
+            return GetInputsWithLabels().Select(x => GLGraphics.TmpGraphics.MeasureString(x.Name, font).Width + (x.Direction == Direction.None ? 0 : SocketVisual.SocketHeight)).DefaultIfEmpty().Max();
+        }
+        public float GetOutputWidth()
+        {
+            return GetOutputs().Select(x => GLGraphics.TmpGraphics.MeasureString(x.Name, font).Width + (x.Direction == Direction.None ? 0 : SocketVisual.SocketHeight)).DefaultIfEmpty().Max();
         }
 
         /// <summary>
@@ -310,7 +326,7 @@ namespace NodeEditor
                     CustomEditor.ClientSize.Height/zoom + HeaderHeight + 8);                
             }
 
-            var inputs = GetInputs().Count();
+            var inputs = GetInputsWithLabels().Count();
             var outputs = GetOutputs().Count();
             if (Callable)
             {
@@ -319,7 +335,8 @@ namespace NodeEditor
             }
             var h = HeaderHeight + Math.Max(inputs*(SocketVisual.SocketHeight + ComponentPadding),
                 outputs*(SocketVisual.SocketHeight + ComponentPadding)) + ComponentPadding*2f;
-            var w = SocketVisual.SocketHeight * 4 + GLGraphics.TmpGraphics.MeasureString(Name, font).Width + ComponentPadding;
+            var elementWidth = Math.Max(GLGraphics.TmpGraphics.MeasureString(Name, font).Width, GetInputWidth() + GetOutputWidth());
+            var w = SocketVisual.SocketHeight * 2 + elementWidth + ComponentPadding;
             csize.Width = Math.Max(csize.Width, Math.Max(w, NodeWidth));
             csize.Height = Math.Max(csize.Height, h);
             if(CustomWidth >= 0)

@@ -57,6 +57,7 @@ namespace NodeEditor
         private Stack<NodeVisual> executionStack = new Stack<NodeVisual>();
         private bool rebuildConnectionDictionary = true;
         private Dictionary<string, NodeConnection> connectionDictionary = new Dictionary<string, NodeConnection>();
+        public Dictionary<string, List<NodeVisual>> variableNodes = new Dictionary<string, List<NodeVisual>>();
 
         /// <summary>
         /// Context of the editor. You should set here an instance that implements INodesContext interface.
@@ -1145,6 +1146,22 @@ namespace NodeEditor
                 nv.LayoutEditor(zoom);
             }
             return nv;
+        }
+
+        public void AddVariable(string name, NodeVisual node)
+        {
+            if (variableNodes.ContainsKey(name))
+            {
+                if (!variableNodes[name].Contains(node))
+                    variableNodes[name].Add(node);
+            }
+            else
+            {
+                variableNodes.Add(name, new List<NodeVisual>());
+                variableNodes[name].Add(node);
+            }
+            node.IsVariable = true;
+            node.fullName = name;
         }
 
         public void AddNode(NodeVisual nv, bool repaint = true)

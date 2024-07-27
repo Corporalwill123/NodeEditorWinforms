@@ -386,6 +386,13 @@ namespace NodeEditor
 
                     Refresh();
                 }
+                graph.Nodes.ForEach(x => x.IsHighlighted = false);
+                var selectedNodes = graph.Nodes.Where(x => x.IsSelected);
+                if (selectedNodes.Count() == 1 && selectedNodes.First().IsVariable)
+                {
+                    variableNodes[selectedNodes.First().fullName].ForEach(x => x.IsHighlighted = true);
+                }
+
                 if (node == null && !mdown)
                 {
                     var nodeWhole =
@@ -506,6 +513,16 @@ namespace NodeEditor
                 graph.Nodes.ForEach(
                     x => x.IsSelected = rect.IntersectsWith(new RectangleF(new PointF(x.X, x.Y), x.GetNodeBounds())));
                 selectionStart = PointF.Empty;
+
+                var selectedNodes = graph.Nodes.Where(x => x.IsSelected);
+                if (selectedNodes.Count() == 1 && selectedNodes.First().IsVariable)
+                {
+                    variableNodes[selectedNodes.First().fullName].ForEach(x => x.IsHighlighted = true);
+                }
+                else
+                {
+                    graph.Nodes.ForEach(x => x.IsHighlighted = false);
+                }
             }
 
             if (dragSocket != null)

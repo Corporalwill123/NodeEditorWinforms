@@ -119,6 +119,9 @@ namespace NodeEditor
         public bool Callable { get; set; }
         public bool ExecInit { get; set; }
         public bool IsSelected { get; set; }
+        public bool IsHighlighted { get; set; }
+        public bool IsVariable { get; set; }
+        public string fullName { get; set; }
         public FeedbackType Feedback { get; set; }
         private object nodeContext { get; set; } 
         public Control CustomEditor { get; internal set; }
@@ -225,7 +228,7 @@ namespace NodeEditor
             return socketCache;
         }
 
-        internal void DiscardCache()
+        public void DiscardCache()
         {
             socketCache = null;
         }
@@ -394,6 +397,10 @@ namespace NodeEditor
             {
                 g.FillRectangle(new SolidBrush(Color.FromArgb(180,Color.WhiteSmoke)), rect);
                 g.FillRectangle(mouseHoverCaption ? Brushes.Gold : Brushes.Goldenrod, caption);
+            }
+            else if (IsHighlighted)
+            {
+                g.FillRectangle(mouseHoverCaption ? Brushes.Lime : Brushes.LimeGreen, caption);
             }
             else
             {

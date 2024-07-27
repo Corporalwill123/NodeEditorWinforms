@@ -361,28 +361,34 @@ namespace NodeEditor
 
                 Focus();
 
-                if ((ModifierKeys & Keys.Shift) != Keys.Shift)
-                {
-                    graph.Nodes.ForEach(x => x.IsSelected = false);
-                }
-
                 var node =
                     graph.Nodes.OrderBy(x => x.Order).FirstOrDefault(
                         x => new RectangleF(new PointF(x.X, x.Y), x.GetHeaderSize()).Contains(loc));
 
                 if (node != null && !mdown)
                 {
-                    
-                    node.IsSelected = true;
-                    
-                    node.Order = graph.Nodes.Min(x => x.Order) - 1;
-                    if (node.CustomEditor != null)
+                    if ((ModifierKeys & Keys.Control) == Keys.None)
                     {
-                        node.CustomEditor.BringToFront();
-                        PassZoomToNodeCustomEditor(node.CustomEditor);
+                        if((ModifierKeys & Keys.Shift) == Keys.None)
+                        {
+                            graph.Nodes.ForEach(x => x.IsSelected = false);
+                        }
+                        
+                        node.IsSelected = true;
+
+                        node.Order = graph.Nodes.Min(x => x.Order) - 1;
+                        if (node.CustomEditor != null)
+                        {
+                            node.CustomEditor.BringToFront();
+                            PassZoomToNodeCustomEditor(node.CustomEditor);
+                        }
+                        mdown = true;
+                        lastmpos = loc;
                     }
-                    mdown = true;
-                    lastmpos = loc;
+                    else
+                    {
+                        node.IsSelected = false;
+                    }
 
                     Refresh();
                 }
@@ -511,7 +517,7 @@ namespace NodeEditor
             {
                 var rect = MakeRect(selectionStart, selectionEnd);
                 graph.Nodes.ForEach(
-                    x => x.IsSelected = rect.IntersectsWith(new RectangleF(new PointF(x.X, x.Y), x.GetNodeBounds())));
+                    x => x.IsSelected = rect.IntersectsWith(new RectangleF(new PointF(x.X, x.Y), x.GetNodeBounds())) ? (ModifierKeys & Keys.Shift) != Keys.None || (ModifierKeys & Keys.Control) == Keys.None : x.IsSelected && (ModifierKeys & (Keys.Shift | Keys.Control)) != Keys.None);
                 selectionStart = PointF.Empty;
 
                 var selectedNodes = graph.Nodes.Where(x => x.IsSelected);
